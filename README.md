@@ -3,8 +3,8 @@
 To regsiter a script as command:
 
 - Create a function in shell script file example.sh
-function command() {
-}
+> function command() {
+> }
 
 - Make the file executable
 chmod +x example.sh
@@ -18,5 +18,3 @@ source example.sh
 
 > command xxx
 
-
-- 

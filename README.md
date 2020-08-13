@@ -18,3 +18,10 @@ source example.sh
 
 > command xxx
 
+
+# Usage of bootidea.sh
+- Source the file
+> source bootidea.sh
+
+- Unzip the spring boot project and launch it in intellij idea. Also it deletes the zip file after unzip.
+> uao <zip file location> <destination location>

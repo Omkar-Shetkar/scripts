@@ -25,3 +25,7 @@ source example.sh
 
 - Unzip the spring boot project and launch it in intellij idea. Also it deletes the zip file after unzip.
 > uao <zip file location> <destination location>
+
+# Markdown editor for Browser
+- editor.html
+

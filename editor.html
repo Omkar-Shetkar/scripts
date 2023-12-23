@@ -49,9 +49,10 @@
     #file-name {
       position: absolute;
       top: 10px;
-      right: 10px;
-      color: #555;
+      left: 10px;
+      color: #d7e0e4;
       font-weight: bold;
+      font-style: italic;
       font-family: 'Courier New', Courier, monospace;
     }
 
@@ -257,7 +258,7 @@
       a.download = fileName;
       a.click();
 
-      // Display the chosen file name in the upper right corner
+      // Display the chosen file name in the upper left corner
       document.getElementById('file-name').innerText = `File: ${fileName}`;
     }
 

@@ -131,6 +131,7 @@
     <button onclick="toggleTheme('light')">Light Mode</button>
     <button onclick="toggleTheme('dark')">Dark Mode</button>
     <button onclick="toggleTheme('dracula')">Dracula Mode</button>
+    <input type="file" id="file-input" accept=".md" onchange="loadFile()">
   </footer>
 
   <!-- Include Marked.js library -->
@@ -168,6 +169,24 @@
 
       // Display the chosen file name in the upper right corner
       document.getElementById('file-name').innerText = `File: ${fileName}`;
+    }
+
+    function loadFile() {
+      var fileInput = document.getElementById('file-input');
+      var file = fileInput.files[0];
+
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var content = e.target.result;
+          document.getElementById('editor').innerHTML = content;
+          updatePreview();
+
+          // Display the file name in the upper right corner
+          document.getElementById('file-name').innerText = `File: ${file.name}`;
+        };
+        reader.readAsText(file);
+      }
     }
 
     function updatePreview() {

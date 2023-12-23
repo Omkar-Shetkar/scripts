@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Editor with Live Preview</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    :root {
+      --background-light: #ffffff;
+      --text-light: #333333;
+      --border-light: #ccc;
+
+      --background-dark: #333333;
+      --text-dark: #ffffff;
+      --border-dark: #555555;
+    }
+
+    body.light-mode {
+      background-color: var(--background-light);
+      color: var(--text-light);
+    }
+
+    body.dark-mode {
+      background-color: var(--background-dark);
+      color: var(--text-dark);
+    }
+
+    #editor-container {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    #editor {
+      border: 1px solid var(--border-light);
+      padding: 10px;
+      min-height: 300px;
+      font-size: 16px;
+      line-height: 1.6;
+      transition: border-color 0.3s;
+    }
+
+    #preview {
+      border: 1px solid var(--border-light);
+      padding: 10px;
+      min-height: 300px;
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: 1.6;
+      transition: border-color 0.3s;
+    }
+
+    button {
+      font-size: 14px;
+      margin: 5px;
+      cursor: pointer;
+      padding: 8px 12px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body class="light-mode">
+
+<div>
+  <button onclick="saveText()">Save</button>
+  <button onclick="openText()">Open</button>
+  <button onclick="togglePreview()">Toggle Preview</button>
+  <button onclick="toggleMode()">Toggle Mode</button>
+</div>
+
+<div id="editor-container">
+  <div id="editor" contenteditable="true" oninput="updatePreview()">
+    <p>Type here...</p>
+  </div>
+
+  <div id="preview"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  function updatePreview() {
+    var editorContent = document.getElementById('editor').innerHTML;
+    var markdownContent = convertHtmlToMarkdown(editorContent);
+    var previewElement = document.getElementById('preview');
+    previewElement.innerHTML = marked.parse(markdownContent);
+  }
+
+  function convertHtmlToMarkdown(html) {
+    // Remove <p> tags and <br> tags
+    html = html.replace(/<p>/g, '');
+    html = html.replace(/<\/p>/g, '\n');
+    html = html.replace(/<br>/g, '');
+
+    return html;
+  }
+
+  function handleImagePaste(files) {
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (file.type.indexOf('image') !== -1) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = document.createElement('img');
+          img.src = e.target.result;
+          document.getElementById('editor').appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    updatePreview();
+  }
+
+  function saveText() {
+    var content = document.getElementById('editor').innerHTML;
+    var markdownContent = convertHtmlToMarkdown(content);
+    var blob = new Blob([markdownContent], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'document.md';
+    a.click();
+  }
+
+  function openText() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.md, .markdown';
+
+    input.onchange = function() {
+      var file = input.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var markdownContent = e.target.result;
+          var htmlContent = marked(markdownContent);
+          document.getElementById('editor').innerHTML = htmlContent;
+          updatePreview();
+        };
+        reader.readAsText(file);
+      }
+    };
+
+    input.click();
+  }
+
+  function togglePreview() {
+    var previewContainer = document.getElementById('preview');
+    previewContainer.style.display = (previewContainer.style.display === 'none') ? 'block' : 'none';
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle('light-mode');
+    document.body.classList.toggle('dark-mode');
+    updateEditorBorder();
+  }
+
+  function updateEditorBorder() {
+    var editor = document.getElementById('editor');
+    var preview = document.getElementById('preview');
+
+    var isDarkMode = document.body.classList.contains('dark-mode');
+
+    editor.style.borderColor = isDarkMode ? 'var(--border-dark)' : 'var(--border-light)';
+    preview.style.borderColor = isDarkMode ? 'var(--border-dark)' : 'var(--border-light)';
+  }
+</script>
+
+</body>
+</html>

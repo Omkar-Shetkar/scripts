@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Editor</title>
-  <link rel="icon" href="path/to/your/icon.png" type="image/png">
+  <link rel="icon" href="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/notepad-512.png" type="image/png">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -119,6 +119,65 @@
       font-size: 12px;
       color: #777;
     }
+    #preview-switch {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    #preview-switch label {
+      margin-right: 10px;
+      font-weight:600;
+      color: #00FF00;
+    }
+
+    /* Stylish Switch Styles */
+    .switch {
+      display: inline-block;
+      height: 34px;
+      position: relative;
+      width: 60px;
+    }
+
+    .slider {
+      background-color: #ccc;
+      border-radius: 34px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 3px;
+      position: absolute;
+      top: 0;
+      transition: background-color 0.4s;
+      width: 100%;
+    }
+
+    .slider:before {
+      background-color: white;
+      border-radius: 50%;
+      content: '';
+      height: 28px;
+      width: 28px;
+      transition: transform 0.4s;
+    }
+
+    input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
   </style>
 </head>
 <body>
@@ -136,7 +195,6 @@
   <div id="file-name"></div>
 
   <footer>
-    <button onclick="togglePreview()">Toggle Preview</button>
     <button onclick="saveContent()">Save</button>
     <button onclick="toggleTheme('light')">Light Mode</button>
     <button onclick="toggleTheme('dark')">Dark Mode</button>
@@ -144,15 +202,27 @@
     <input type="file" id="file-input" accept=".md" onchange="loadFile()">
   </footer>
 
+  <div id="preview-switch" onclick="togglePreview()">
+    <label for="toggle-preview">Show Preview:</label>
+    <div class="switch">
+      <input type="checkbox" id="toggle-preview">
+      <div class="slider"></div>
+    </div>
+  </div>
+
   <div id="made-by-text">Made possible by ChatGPT</div>
+
   
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    function togglePreview() {
+     
+     function togglePreview() {
       var previewContainer = document.getElementById('preview-container');
-      var currentDisplay = window.getComputedStyle(previewContainer).getPropertyValue('display');
-      
-      if (currentDisplay === 'none') {
+      var toggleSwitch = document.getElementById('toggle-preview');
+
+      toggleSwitch.checked = !toggleSwitch.checked;
+
+      if (toggleSwitch.checked) {
         previewContainer.style.display = 'block';
       } else {
         previewContainer.style.display = 'none';

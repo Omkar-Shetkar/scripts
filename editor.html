@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Editor</title>
-  <link rel="icon" href="https://static.vecteezy.com/system/resources/previews/000/420/826/original/edit-icon-vector-illustration.jpg" type="image/png">
+  <link rel="icon" href="path/to/your/icon.png" type="image/png">
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
       margin: 0;
       padding: 0;
       display: flex;
@@ -48,7 +50,7 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      color: #28a11f;
+      color: #555;
       font-weight: bold;
       font-family: 'Courier New', Courier, monospace;
     }
@@ -134,9 +136,7 @@
     <input type="file" id="file-input" accept=".md" onchange="loadFile()">
   </footer>
 
-  <!-- Include Marked.js library -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
   <script>
     function togglePreview() {
       var previewContainer = document.getElementById('preview-container');
@@ -150,8 +150,11 @@
 
       updatePreview();
     }
-    
+
     function saveContent() {
+      // Flush local storage before saving to a file
+      flushLocalStorage();
+
       var fileName = document.getElementById('file-name').innerText.replace('File: ', '');
 
       if (!fileName) {
@@ -176,24 +179,6 @@
 
       // Display the chosen file name in the upper right corner
       document.getElementById('file-name').innerText = `File: ${fileName}`;
-    }
-
-    function loadFile() {
-      var fileInput = document.getElementById('file-input');
-      var file = fileInput.files[0];
-
-      if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var content = e.target.result;
-          document.getElementById('editor').innerHTML = content;
-          updatePreview();
-
-          // Display the file name in the upper right corner
-          document.getElementById('file-name').innerText = `File: ${file.name}`;
-        };
-        reader.readAsText(file);
-      }
     }
 
     function updatePreview() {
@@ -225,16 +210,58 @@
       }
     }
 
-    // Listen for Ctrl+S-like behavior using 'keydown' event
-    document.addEventListener('keydown', function(event) {
-      if (event.ctrlKey && event.key === 's') {
-        event.preventDefault(); // Prevent the browser's default save behavior
-        saveContent();
+    function saveToLocalStorage() {
+      var content = document.getElementById('editor').innerHTML;
+      localStorage.setItem('autoSaveContent', content);
+    }
+
+    function flushLocalStorage() {
+      localStorage.removeItem('autoSaveContent');
+    }
+
+    function loadFile() {
+      var fileInput = document.getElementById('file-input');
+      var file = fileInput.files[0];
+
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var content = e.target.result;
+          document.getElementById('editor').innerHTML = content;
+          updatePreview();
+
+          // Display the file name in the upper right corner
+          document.getElementById('file-name').innerText = `File: ${file.name}`;
+
+          // Flush local storage when loading a file
+          flushLocalStorage();
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    // Load auto-saved content on page load
+    window.addEventListener('load', function() {
+      var autoSaveContent = localStorage.getItem('autoSaveContent');
+      if (autoSaveContent) {
+        document.getElementById('editor').innerHTML = autoSaveContent;
+        updatePreview();
       }
     });
 
-    // Update the preview on initial load
-    updatePreview();
+    // Load auto-saved content when switching between light/dark themes
+    window.addEventListener('DOMContentLoaded', function() {
+      var autoSaveContent = localStorage.getItem('autoSaveContent');
+      if (autoSaveContent) {
+        document.getElementById('editor').innerHTML = autoSaveContent;
+        updatePreview();
+      }
+    });
+
+    // Auto-save content every 10 seconds
+    setInterval(function() {
+      saveToLocalStorage();
+    }, 5000);
   </script>
 </body>
 </html>

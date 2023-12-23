@@ -140,10 +140,17 @@
   <script>
     function togglePreview() {
       var previewContainer = document.getElementById('preview-container');
-      previewContainer.style.display = (previewContainer.style.display === 'none') ? 'block' : 'none';
+      var currentDisplay = window.getComputedStyle(previewContainer).getPropertyValue('display');
+      
+      if (currentDisplay === 'none') {
+        previewContainer.style.display = 'block';
+      } else {
+        previewContainer.style.display = 'none';
+      }
+
       updatePreview();
     }
-
+    
     function saveContent() {
       var fileName = document.getElementById('file-name').innerText.replace('File: ', '');
 

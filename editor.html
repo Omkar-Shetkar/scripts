@@ -320,29 +320,65 @@
         reader.readAsText(file);
       }
     }
-
-    // Load auto-saved content on page load
-    window.addEventListener('load', function() {
+  // Load auto-saved content on page load
+  window.addEventListener('load', function () {
       var autoSaveContent = localStorage.getItem('autoSaveContent');
+      var editor = document.getElementById('editor');
       if (autoSaveContent) {
-        document.getElementById('editor').innerHTML = autoSaveContent;
-        updatePreview();
+        editor.innerHTML = autoSaveContent;
       }
+
+      // Show placeholder text when editor is empty
+      updatePlaceholder();
     });
 
     // Load auto-saved content when switching between light/dark themes
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', function () {
       var autoSaveContent = localStorage.getItem('autoSaveContent');
+      var editor = document.getElementById('editor');
       if (autoSaveContent) {
-        document.getElementById('editor').innerHTML = autoSaveContent;
-        updatePreview();
+        editor.innerHTML = autoSaveContent;
       }
+
+      // Show placeholder text when editor is empty
+      updatePlaceholder();
     });
 
     // Auto-save content every 10 seconds
-    setInterval(function() {
+    setInterval(function () {
       saveToLocalStorage();
-    }, 5000);
+    }, 10000);
+
+    // Show placeholder text when editor is empty
+    function updatePlaceholder() {
+      var editor = document.getElementById('editor');
+      var placeholder = 'Type here...';
+
+      if (!editor.innerText.trim()) {
+        editor.innerText = placeholder;
+        editor.classList.add('placeholder');
+      } else if (editor.innerText === placeholder) {
+        editor.classList.add('placeholder');
+      } else {
+        editor.classList.remove('placeholder');
+      }
+    }
+
+    // Clear placeholder text when user clicks in the editor
+    document.getElementById('editor').addEventListener('click', function () {
+      var editor = document.getElementById('editor');
+      if (editor.classList.contains('placeholder')) {
+        editor.innerText = '';
+        editor.classList.remove('placeholder');
+      }
+    });
+
+    // Call updatePlaceholder on input and paste events
+    document.getElementById('editor').addEventListener('input', updatePlaceholder);
+    document.getElementById('editor').addEventListener('paste', function (event) {
+      updatePlaceholder();
+      handlePaste(event);
+    });
   </script>
 </body>
 </html>

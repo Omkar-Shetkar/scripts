@@ -1,384 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Editor</title>
-  <link rel="icon" href="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/notepad-512.png" type="image/png">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-      position: relative;
-    }
-
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-    }
-
-    #editor-container {
-      flex: 1;
-      display: flex;
-      border-right: 1px solid #ddd;
-    }
-
-    #editor {
-      flex: 1;
-      padding: 20px;
-      font-size: 16px;
-      outline: none;
-      overflow: auto;
-    }
-
-    #preview-container {
-      flex: 1;
-      padding: 20px;
-      overflow: auto;
-      display: none;
-    }
-
-    #file-name {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #d7e0e4;
-      font-weight: bold;
-      font-style: italic;
-      font-family: 'Courier New', Courier, monospace;
-    }
-
-    footer {
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-    }
-
-    button {
-      cursor: pointer;
-      padding: 10px;
-      margin: 5px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-    }
-
-    .light-mode {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-
-    .light-mode #editor {
-      background-color: #fff;
-      color: #333;
-    }
-
-    .dark-mode {
-      background-color: #222;
-      color: #fff;
-    }
-
-    .dark-mode #editor {
-      background-color: #333;
-      color: #ddd;
-    }
-
-    .dracula-mode {
-      background-color: #282a36;
-      color: #f8f8f2;
-    }
-
-    .dracula-mode #editor {
-      background-color: #282a36;
-      color: #f8f8f2;
-    }
-
-    /* Additional style for preview text in dark mode and dracula mode */
-    .dark-mode #preview-container,
-    .dracula-mode #preview-container {
-      color: #ddd;
-    }
-
-    /* Ensure pasted images fit within the editor */
-    #editor img {
-      max-width: 100%;
-    }
-
-    #made-by-text {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      color: #777;
-    }
-    #preview-switch {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-    }
-
-    #preview-switch label {
-      margin-right: 10px;
-      font-weight:600;
-      color: #00FF00;
-    }
-
-    /* Stylish Switch Styles */
-    .switch {
-      display: inline-block;
-      height: 34px;
-      position: relative;
-      width: 60px;
-    }
-
-    .slider {
-      background-color: #ccc;
-      border-radius: 34px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      overflow: hidden;
-      padding: 3px;
-      position: absolute;
-      top: 0;
-      transition: background-color 0.4s;
-      width: 100%;
-    }
-
-    .slider:before {
-      background-color: white;
-      border-radius: 50%;
-      content: '';
-      height: 28px;
-      width: 28px;
-      transition: transform 0.4s;
-    }
-
-    input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Markdown Editor</h1>
-  </header>
-
-  <div id="editor-container">
-    <div id="editor" contenteditable="true" spellcheck="false" oninput="updatePreview()" onpaste="handlePaste(event)">
-      <!-- Initial content goes here -->
-    </div>
-    <div id="preview-container"></div>
-  </div>
-
-  <div id="file-name"></div>
-
-  <footer>
-    <button onclick="saveContent()">Save</button>
-    <button onclick="toggleTheme('light')">Light Mode</button>
-    <button onclick="toggleTheme('dark')">Dark Mode</button>
-    <button onclick="toggleTheme('dracula')">Dracula Mode</button>
-    <input type="file" id="file-input" accept=".md" onchange="loadFile()">
-  </footer>
-
-  <div id="preview-switch" onclick="togglePreview()">
-    <label for="toggle-preview">Show Preview:</label>
-    <div class="switch">
-      <input type="checkbox" id="toggle-preview">
-      <div class="slider"></div>
-    </div>
-  </div>
-
-  <div id="made-by-text">Made possible by ChatGPT</div>
-
-  
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-     
-     function togglePreview() {
-      var previewContainer = document.getElementById('preview-container');
-      var toggleSwitch = document.getElementById('toggle-preview');
-
-      toggleSwitch.checked = !toggleSwitch.checked;
-
-      if (toggleSwitch.checked) {
-        previewContainer.style.display = 'block';
-      } else {
-        previewContainer.style.display = 'none';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown Editor</title>
+    <link
+      rel="icon"
+      href="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/notepad-512.png"
+      type="image/png"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        position: relative;
       }
 
-      updatePreview();
-    }
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+      }
 
-    function saveContent() {
-      // Flush local storage before saving to a file
-      flushLocalStorage();
+      #editor-container {
+        flex: 1;
+        display: flex;
+        border-right: 1px solid #ddd;
+      }
 
-      var fileName = document.getElementById('file-name').innerText.replace('File: ', '');
+      #editor {
+        flex: 1;
+        padding: 20px;
+        font-size: 16px;
+        outline: none;
+        overflow: auto;
+      }
 
-      if (!fileName) {
-        fileName = prompt('Enter a file name', 'markdown_content');
+      #preview-container {
+        flex: 1;
+        padding: 20px;
+        overflow: auto;
+        display: none;
+      }
 
-        if (!fileName) {
-          return; // User canceled the prompt
+      #file-name {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #d7e0e4;
+        font-weight: bold;
+        font-style: italic;
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      footer {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+      }
+
+      button {
+        cursor: pointer;
+        padding: 10px;
+        margin: 5px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+      }
+
+      .light-mode {
+        background-color: #f5f5f5;
+        color: #333;
+      }
+
+      .light-mode #editor {
+        background-color: #fff;
+        color: #333;
+      }
+
+      .dark-mode {
+        background-color: #222;
+        color: #fff;
+      }
+
+      .dark-mode #editor {
+        background-color: #333;
+        color: #ddd;
+      }
+
+      .dracula-mode {
+        background-color: #282a36;
+        color: #f8f8f2;
+      }
+
+      .dracula-mode #editor {
+        background-color: #282a36;
+        color: #f8f8f2;
+      }
+
+      /* Additional style for preview text in dark mode and dracula mode */
+      .dark-mode #preview-container,
+      .dracula-mode #preview-container {
+        color: #ddd;
+      }
+
+      /* Ensure pasted images fit within the editor */
+      #editor img {
+        max-width: 100%;
+      }
+
+      #made-by-text {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+        color: #777;
+      }
+      #preview-switch {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+      }
+
+      #preview-switch label {
+        margin-right: 10px;
+        font-weight: 600;
+        color: #00ff00;
+      }
+
+      /* Stylish Switch Styles */
+      .switch {
+        display: inline-block;
+        height: 34px;
+        position: relative;
+        width: 60px;
+      }
+
+      .slider {
+        background-color: #ccc;
+        border-radius: 34px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        overflow: hidden;
+        padding: 3px;
+        position: absolute;
+        top: 0;
+        transition: background-color 0.4s;
+        width: 100%;
+      }
+
+      .slider:before {
+        background-color: white;
+        border-radius: 50%;
+        content: "";
+        height: 28px;
+        width: 28px;
+        transition: transform 0.4s;
+      }
+
+      input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Markdown Editor</h1>
+    </header>
+
+    <div id="editor-container">
+      <div
+        id="editor"
+        contenteditable="true"
+        spellcheck="false"
+        oninput="updatePreview()"
+        onpaste="handlePaste(event)"
+      >
+        <!-- Initial content goes here -->
+      </div>
+      <div id="preview-container"></div>
+    </div>
+
+    <div id="file-name"></div>
+
+    <footer>
+      <button onclick="saveContent()">Save</button>
+      <button onclick="toggleTheme('light')">Light Mode</button>
+      <button onclick="toggleTheme('dark')">Dark Mode</button>
+      <button onclick="toggleTheme('dracula')">Dracula Mode</button>
+      <input type="file" id="file-input" accept=".md" onchange="loadFile()" />
+    </footer>
+
+    <div id="preview-switch" onclick="togglePreview()">
+      <label for="toggle-preview">Show Preview:</label>
+      <div class="switch">
+        <input type="checkbox" id="toggle-preview" />
+        <div class="slider"></div>
+      </div>
+    </div>
+
+    <div id="made-by-text">Made possible by ChatGPT</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      function toggleTheme(theme) {
+        document.body.className = theme + "-mode";
+        document.getElementById("editor-container").className = theme + "-mode";
+        document.getElementById("editor").className = theme + "-mode";
+        document.getElementById("preview-container").className =
+          theme + "-mode";
+
+        // Save the selected theme in local storage
+        localStorage.setItem("selectedTheme", theme);
+      }
+
+      function togglePreview() {
+        var previewContainer = document.getElementById("preview-container");
+        var toggleSwitch = document.getElementById("toggle-preview");
+
+        toggleSwitch.checked = !toggleSwitch.checked;
+
+        alert(toggleSwitch.checked);
+
+        if (toggleSwitch.checked) {
+          previewContainer.style.display = "block";
+        } else {
+          previewContainer.style.display = "none";
         }
 
-        // Add ".md" extension if not provided
-        fileName = fileName.endsWith('.md') ? fileName : fileName + '.md';
-      }
-
-      var content = document.getElementById('editor').innerHTML;
-
-      // For simplicity, you can use the Blob API to create a downloadable file
-      var blob = new Blob([content], { type: 'text/plain' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = fileName;
-      a.click();
-
-      // Display the chosen file name in the upper left corner
-      document.getElementById('file-name').innerText = `File: ${fileName}`;
-    }
-
-    function updatePreview() {
-      var editorContent = document.getElementById('editor').innerText;
-      var previewContainer = document.getElementById('preview-container');
-      previewContainer.innerHTML = marked.parse(editorContent);
-    }
-
-    function toggleTheme(theme) {
-      document.body.className = theme + '-mode';
-      document.getElementById('editor-container').className = theme + '-mode';
-      document.getElementById('editor').className = theme + '-mode';
-      document.getElementById('preview-container').className = theme + '-mode';
-    }
-
-    function handlePaste(event) {
-      var clipboardData = event.clipboardData || window.clipboardData;
-      var pastedData = clipboardData.getData('text/html');
-
-      // Check if the pasted content includes images
-      if (pastedData.includes('<img')) {
-        event.preventDefault(); // Prevent the default paste behavior
-
-        // Insert the pasted content into the editor
-        document.execCommand('insertHTML', false, pastedData);
-
-        // Update the preview
         updatePreview();
+
+        // Save the state of the preview switch in localStorage
+        localStorage.setItem("showPreview", toggleSwitch.checked);
       }
-    }
 
-    function saveToLocalStorage() {
-      var content = document.getElementById('editor').innerHTML;
-      localStorage.setItem('autoSaveContent', content);
-    }
+      // Load auto-saved content on page load
+      window.addEventListener("load", function () {
+        var autoSaveContent = localStorage.getItem("autoSaveContent");
+        var editor = document.getElementById("editor");
+        if (autoSaveContent) {
+          editor.innerHTML = autoSaveContent;
+        }
 
-    function flushLocalStorage() {
-      localStorage.removeItem('autoSaveContent');
-    }
+        // Show placeholder text when editor is empty
+        updatePlaceholder();
 
-    function loadFile() {
-      var fileInput = document.getElementById('file-input');
-      var file = fileInput.files[0];
+        // Load saved theme
+        var savedTheme = localStorage.getItem("selectedTheme");
+        if (savedTheme) {
+          toggleTheme(savedTheme);
+        }
 
-      if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var content = e.target.result;
-          document.getElementById('editor').innerHTML = content;
+        // Load saved preview settings
+        var showPreview = localStorage.getItem("showPreview");
+        if (showPreview === "true") {
+          var toggleSwitch = document.getElementById("toggle-preview");
+          toggleSwitch.checked = false;
+          togglePreview();
+        }
+      });
+
+      // Load auto-saved content when switching between light/dark themes
+      window.addEventListener("DOMContentLoaded", function () {
+        var autoSaveContent = localStorage.getItem("autoSaveContent");
+        var editor = document.getElementById("editor");
+        if (autoSaveContent) {
+          editor.innerHTML = autoSaveContent;
+        }
+
+        // Show placeholder text when editor is empty
+        updatePlaceholder();
+
+        // Load saved theme
+        var savedTheme = localStorage.getItem("selectedTheme");
+        if (savedTheme) {
+          toggleTheme(savedTheme);
+        }
+
+        // Load saved preview settings
+        var showPreview = localStorage.getItem("showPreview");
+        if (showPreview === "true") {
+          var toggleSwitch = document.getElementById("toggle-preview");
+          toggleSwitch.checked = false;
+          togglePreview();
+        }
+      });
+
+      function saveContent() {
+        // Flush local storage before saving to a file
+        flushLocalStorage();
+
+        var fileName = document
+          .getElementById("file-name")
+          .innerText.replace("File: ", "");
+
+        if (!fileName) {
+          fileName = prompt("Enter a file name", "markdown_content");
+
+          if (!fileName) {
+            return; // User canceled the prompt
+          }
+
+          // Add ".md" extension if not provided
+          fileName = fileName.endsWith(".md") ? fileName : fileName + ".md";
+        }
+
+        var content = document.getElementById("editor").innerHTML;
+
+        // For simplicity, you can use the Blob API to create a downloadable file
+        var blob = new Blob([content], { type: "text/plain" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        a.click();
+
+        // Display the chosen file name in the upper left corner
+        document.getElementById("file-name").innerText = `File: ${fileName}`;
+      }
+
+      function updatePreview() {
+        var editorContent = document.getElementById("editor").innerText;
+        var previewContainer = document.getElementById("preview-container");
+        previewContainer.innerHTML = marked.parse(editorContent);
+      }
+
+      function handlePaste(event) {
+        var clipboardData = event.clipboardData || window.clipboardData;
+        var pastedData = clipboardData.getData("text/html");
+
+        // Check if the pasted content includes images
+        if (pastedData.includes("<img")) {
+          event.preventDefault(); // Prevent the default paste behavior
+
+          // Insert the pasted content into the editor
+          document.execCommand("insertHTML", false, pastedData);
+
+          // Update the preview
           updatePreview();
-
-          // Display the file name in the upper right corner
-          document.getElementById('file-name').innerText = `File: ${file.name}`;
-
-          // Flush local storage when loading a file
-          flushLocalStorage();
-        };
-        reader.readAsText(file);
+        }
       }
-    }
-  // Load auto-saved content on page load
-  window.addEventListener('load', function () {
-      var autoSaveContent = localStorage.getItem('autoSaveContent');
-      var editor = document.getElementById('editor');
-      if (autoSaveContent) {
-        editor.innerHTML = autoSaveContent;
+
+      function saveToLocalStorage() {
+        var content = document.getElementById("editor").innerHTML;
+        localStorage.setItem("autoSaveContent", content);
       }
+
+      function flushLocalStorage() {
+        localStorage.removeItem("autoSaveContent");
+      }
+
+      function loadFile() {
+        var fileInput = document.getElementById("file-input");
+        var file = fileInput.files[0];
+
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var content = e.target.result;
+            document.getElementById("editor").innerHTML = content;
+            updatePreview();
+
+            // Display the file name in the upper right corner
+            document.getElementById(
+              "file-name"
+            ).innerText = `File: ${file.name}`;
+
+            // Flush local storage when loading a file
+            flushLocalStorage();
+          };
+          reader.readAsText(file);
+        }
+      }
+
+      // Auto-save content every 10 seconds
+      setInterval(function () {
+        saveToLocalStorage();
+      }, 10000);
 
       // Show placeholder text when editor is empty
-      updatePlaceholder();
-    });
+      function updatePlaceholder() {
+        var editor = document.getElementById("editor");
+        var placeholder = "Type here...";
 
-    // Load auto-saved content when switching between light/dark themes
-    window.addEventListener('DOMContentLoaded', function () {
-      var autoSaveContent = localStorage.getItem('autoSaveContent');
-      var editor = document.getElementById('editor');
-      if (autoSaveContent) {
-        editor.innerHTML = autoSaveContent;
+        if (!editor.innerText.trim()) {
+          editor.innerText = placeholder;
+          editor.classList.add("placeholder");
+        } else if (editor.innerText === placeholder) {
+          editor.classList.add("placeholder");
+        } else {
+          editor.classList.remove("placeholder");
+        }
       }
 
-      // Show placeholder text when editor is empty
-      updatePlaceholder();
-    });
+      // Clear placeholder text when user clicks in the editor
+      document.getElementById("editor").addEventListener("click", function () {
+        var editor = document.getElementById("editor");
+        if (editor.classList.contains("placeholder")) {
+          editor.innerText = "";
+          editor.classList.remove("placeholder");
+        }
+      });
 
-    // Auto-save content every 10 seconds
-    setInterval(function () {
-      saveToLocalStorage();
-    }, 10000);
-
-    // Show placeholder text when editor is empty
-    function updatePlaceholder() {
-      var editor = document.getElementById('editor');
-      var placeholder = 'Type here...';
-
-      if (!editor.innerText.trim()) {
-        editor.innerText = placeholder;
-        editor.classList.add('placeholder');
-      } else if (editor.innerText === placeholder) {
-        editor.classList.add('placeholder');
-      } else {
-        editor.classList.remove('placeholder');
-      }
-    }
-
-    // Clear placeholder text when user clicks in the editor
-    document.getElementById('editor').addEventListener('click', function () {
-      var editor = document.getElementById('editor');
-      if (editor.classList.contains('placeholder')) {
-        editor.innerText = '';
-        editor.classList.remove('placeholder');
-      }
-    });
-
-    // Call updatePlaceholder on input and paste events
-    document.getElementById('editor').addEventListener('input', updatePlaceholder);
-    document.getElementById('editor').addEventListener('paste', function (event) {
-      updatePlaceholder();
-      handlePaste(event);
-    });
-  </script>
-</body>
+      // Call updatePlaceholder on input and paste events
+      document
+        .getElementById("editor")
+        .addEventListener("input", updatePlaceholder);
+      document
+        .getElementById("editor")
+        .addEventListener("paste", function (event) {
+          updatePlaceholder();
+          handlePaste(event);
+        });
+    </script>
+  </body>
 </html>

@@ -131,7 +131,7 @@
         bottom: 10px;
         right: 10px;
         font-size: 12px;
-        color: #777;
+        color: #9e9a9a;
       }
       #preview-switch {
         position: fixed;
@@ -192,6 +192,22 @@
       input:checked + .slider:before {
         transform: translateX(26px);
       }
+
+      /* Style the file input button */
+#file-input {
+  display: none; /* Hide the default file input button */
+}
+
+.file-input-label {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
     </style>
   </head>
   <body>
@@ -219,6 +235,7 @@
       <button onclick="toggleTheme('dark')">Dark Mode</button>
       <button onclick="toggleTheme('dracula')">Dracula Mode</button>
       <input type="file" id="file-input" accept=".md" onchange="loadFile()" />
+      <label for="file-input" class="file-input-label">Open File</label>
     </footer>
 
     <div id="preview-switch" onclick="togglePreview()">
@@ -267,7 +284,7 @@
         var autoSaveContent = localStorage.getItem("autoSaveContent");
         var editor = document.getElementById("editor");
         if (autoSaveContent) {
-          editor.innerHTML = autoSaveContent;
+          editor.innerText = autoSaveContent;
         }
 
         // Show placeholder text when editor is empty
@@ -293,7 +310,7 @@
         var autoSaveContent = localStorage.getItem("autoSaveContent");
         var editor = document.getElementById("editor");
         if (autoSaveContent) {
-          editor.innerHTML = autoSaveContent;
+          editor.innerText = autoSaveContent;
         }
 
         // Show placeholder text when editor is empty
@@ -333,7 +350,7 @@
           fileName = fileName.endsWith(".md") ? fileName : fileName + ".md";
         }
 
-        var content = document.getElementById("editor").innerHTML;
+        var content = document.getElementById("editor").innerText;
 
         // For simplicity, you can use the Blob API to create a downloadable file
         var blob = new Blob([content], { type: "text/plain" });
@@ -369,7 +386,7 @@
       }
 
       function saveToLocalStorage() {
-        var content = document.getElementById("editor").innerHTML;
+        var content = document.getElementById("editor").innerText;
         localStorage.setItem("autoSaveContent", content);
       }
 
@@ -385,7 +402,7 @@
           var reader = new FileReader();
           reader.onload = function (e) {
             var content = e.target.result;
-            document.getElementById("editor").innerHTML = content;
+            document.getElementById("editor").innerText = content;
             updatePreview();
 
             // Display the file name in the upper right corner

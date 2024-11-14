@@ -7,17 +7,43 @@ Details: https://www.userchrome.org/how-create-userchrome-css.html
   
 - Create `userChrome.css` file under `chrome` folder.
 
+Refer: https://github.com/Timvde/UserChrome-Tweaks/blob/master/tabs/hide-tabs-windows.css
+
 ```css
-/* Squash tab bar to 1px tall and hide the tabs */
-#TabsToolbar {
-  height: 1px !important;
-  min-height: 1px !important;
-  max-height: 1px !important;
-} 
-#TabsToolbar .tabbrowser-tab {
-  display: none !important;
+
+.tabbrowser-tab {
+  visibility: collapse !important;
 }
-#tabbrowser-tabs { visibility: collapse !important; }
+
+.titlebar-button {
+  height: 40px !important;
+}
+
+#nav-bar {
+  margin-top: -42px;
+  margin-right: 140px;
+  box-shadow: none !important;
+}
+
+[uidensity="compact"]:root .titlebar-button {
+  height: 32px !important;
+}
+
+[uidensity="compact"]:root #nav-bar {
+  margin-top: -32px;
+}
+
+#titlebar-spacer {
+  background-color: var(--chrome-secondary-background-color);
+}
+
+#titlebar-buttonbox-container {
+  background-color: var(--chrome-secondary-background-color);
+}
+
+.titlebar-color {
+  background-color: var(--toolbar-bgcolor);
+}
 ```
 
 

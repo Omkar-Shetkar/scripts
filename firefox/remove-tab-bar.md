@@ -4,7 +4,7 @@
 Details: https://www.userchrome.org/how-create-userchrome-css.html
 
 - Create `chrome` folder in profile folder.
-- 
+  
 - Create `userChrome.css` file under `chrome` folder.
 
 ```css
